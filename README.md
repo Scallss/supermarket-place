@@ -1,7 +1,7 @@
 # Supermarket-Place
 Place to fulfill your daily grocery needs!
 
-Tautan untuk melihat website pada [link ini](http://pascal-hafidz-supermarketplace.pbp.cs.ui.ac.id)
+Tautan untuk melihat website pada [link ini](http://pascal-hafidz-supermarketplace2.pbp.cs.ui.ac.id)
 
 ## Implementation Checklist 
 Untuk mmebuat proyek Django baru bernama `supermarket-place` kita jalankan perintah berikut:
@@ -74,11 +74,11 @@ Pada baris paling akhir, ditambahkan static untuk handle pengambilan image.
 
 Melakukan deployment ke PWS terhadap aplikasi yang sudah dibuat dilakukan dengan cara membuat project baru pada PWS yang kemudian kita tambahkan host PWS pada `settings.py` proyek sebagai berikut:
 ```
-ALLOWED_HOSTS = [...., "pascal-hafidz-supermarketplace.pbp.cs.ui.ac.id"]
+ALLOWED_HOSTS = [...., "pascal-hafidz-supermarketplace2.pbp.cs.ui.ac.id"]
 ```
 Setelah itu kita bisa melakukan push pada direktori project django dengan menjalankan:
 ```
-git remote add pws http://pbp.cs.ui.ac.id/pascal.hafidz/supermarketplace
+git remote add pws http://pbp.cs.ui.ac.id/pascal.hafidz/supermarketplace2
 git branch -M master
 git push pws master
 ```
