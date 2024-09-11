@@ -1,7 +1,7 @@
 # Supermarket-Place
 Place to fulfill your daily grocery needs!
 
-Tautan untuk melihat website pada [link ini]() (PWS Build Failed: Creating a temp directory)
+Tautan untuk melihat website pada [link ini](http://pascal-hafidz-supermarketplace.pbp.cs.ui.ac.id)
 
 ## Implementation Checklist 
 Untuk mmebuat proyek Django baru bernama `supermarket-place` kita jalankan perintah berikut:
