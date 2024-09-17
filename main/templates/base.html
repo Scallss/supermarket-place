@@ -11,8 +11,14 @@
             padding: 0;
             background-color: #f8f9fa;
         }
-        nav {
+        header {
             background-color: #343a40;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav {
+            background-color: #495057;
             padding: 1rem;
             text-align: center;
         }
@@ -28,8 +34,9 @@
         .container {
             margin: 2rem;
         }
-        h1 {
-            color: #343a40;
+        h1, h2 {
+            margin: 0;
+            color: #f8f9fa;
         }
         button {
             background-color: #28a745;
@@ -45,6 +52,11 @@
     </style>
 </head>
 <body>
+    <header>
+        <h1>Supermarket-place</h1>
+        <h2>Pascal Hafidz Fajri - 2306222746</h2>
+    </header>
+    
     <nav>
         <a href="{% url 'main:show_main' %}">Home</a>
         <a href="{% url 'main:add_product' %}">Add Product</a>
