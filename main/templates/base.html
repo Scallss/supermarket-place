@@ -4,21 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Supermarket-Place{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        nav {
+            background-color: #343a40;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            margin: 2rem;
+        }
+        h1 {
+            color: #343a40;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1><a href="{% url 'product_list' %}">Supermarket-Place</a></h1>
-        <h1>Pascal Hafidz Fajri - 2306222746</h1>
-    </header>
+    <nav>
+        <a href="{% url 'main:show_main' %}">Home</a>
+        <a href="{% url 'main:add_product' %}">Add Product</a>
+    </nav>
 
-    <div class="content">
-        {% block content %}{% endblock %}
+    <div class="container">
+        {% block content %}
+        {% endblock %}
     </div>
-
-    <footer>
-        <p>&copy; 2024 Supermarket-Place</p>
-    </footer>
 </body>
 </html>
