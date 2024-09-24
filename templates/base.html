@@ -34,7 +34,12 @@
         .container {
             margin: 2rem;
         }
-        h1, h2 {
+        h1{
+            margin: 0;
+            color: black;
+        }
+
+        h2 {
             margin: 0;
             color: #f8f9fa;
         }
@@ -53,13 +58,16 @@
 </head>
 <body>
     <header>
-        <h1>Supermarket-place</h1>
+        <h2>Supermarket-place</h2>
         <h2>Pascal Hafidz Fajri - 2306222746</h2>
     </header>
     
     <nav>
         <a href="{% url 'main:show_main' %}">Home</a>
-        <a href="{% url 'main:add_product' %}">Add Product</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'main:add_product' %}">Add Product</a>
+            <a href="{% url 'main:logout' %}">Logout</a>
+        {% endif %}
     </nav>
 
     <div class="container">
