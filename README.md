@@ -334,3 +334,355 @@ XML by id:
 
 JSON by id:
 ![image](https://github.com/user-attachments/assets/115ca63d-a5a4-486c-96ae-fbe827bd0811)
+
+# Tugas 3
+## Checklist Implementation
+
+Untuk mengimplementasikan fungsi registrasi, login, dan logout, bisa dimulai dengan pertama membuat fungsinya satu-satu pada `views.py`. Selain implementasi yang utama, juga diimplementasi cookies untuk menghandle session. Implementasi codenya adalah sebagai berikut:
+```
+...
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+...
+@login_required(login_url='/login')    # Ditambahkan decorator ini sehingga page show_main hanya dapat diakses jika user sudah login
+def show_main(request):
+...
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+
+def login_user(request):
+   if request.user.is_authenticated:
+        # Redirect authenticated users to the homepage or other page
+        return redirect('main:show_main')
+
+   if request.method == 'POST':
+      form = AuthenticationForm(data=request.POST)
+
+      if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        response = HttpResponseRedirect(reverse("main:show_main"))
+        response.set_cookie('last_login', str(datetime.datetime.now()))
+        return response
+
+   else:
+      form = AuthenticationForm(request)
+   context = {'form': form}
+   return render(request, 'login.html', context)
+
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+
+Setelah fungsinya sudah dibuat, kita bisa langsung melakukan routing pada `urls.py` pada direktori `main`.
+```
+...
+from main.views import register, login_user, logout_user  
+...
+urlpatterns = [
+    ...
+    path('register/', register, name='register'),
+    path('login/', login_user, name='login'),
+    path('logout/', logout_user, name='logout'),
+]
+```
+
+Setelah itu, lakukan modifikasi templates:
+`base.html`:
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Supermarket-Place{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        header {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav {
+            background-color: #495057;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            margin: 2rem;
+        }
+        h1{
+            margin: 0;
+            color: black;
+        }
+
+        h2 {
+            margin: 0;
+            color: #f8f9fa;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Supermarket-place</h2>
+        <h2>Pascal Hafidz Fajri - 2306222746</h2>
+    </header>
+    
+    <nav>
+        <a href="{% url 'main:show_main' %}">Home</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'main:add_product' %}">Add Product</a>
+            <a href="{% url 'main:logout' %}">Logout</a>
+        {% endif %}
+    </nav>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
+```
+
+`main.html`:
+```
+{% extends 'base.html' %}
+
+{% block title %}Product List{% endblock %}
+
+{% block content %}
+<h1>Available Products</h1>
+
+{% if product_entries %}
+    <ul>
+        {% for product in product_entries %}
+            <li style="margin-bottom: 2rem; list-style-type: none;">
+                <strong style="font-size: 1.5rem;">{{ product.name }}</strong><br>
+                Price: ${{ product.price }}<br>
+                Stock: {{ product.stock }}<br>
+                Category: {{ product.category }}<br>
+                <p style="max-width: 400px;">{{ product.description }}</p>
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No products available at the moment.</p>
+{% endif %}
+<a href="{% url 'main:logout' %}">
+    <button>Logout</button>
+</a>
+{% endblock %}
+```
+
+Tambahkan `login.html`:
+```
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="login">
+  <h1>Login</h1>
+
+  <form method="POST" action="">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input class="btn login_btn" type="submit" value="Login" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} Don't have an account yet?
+  <a href="{% url 'main:register' %}">Register Now</a>
+</div>
+
+{% endblock content %}
+```
+
+Tambahkan `register.html`:
+```
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+
+<div class="login">
+  <h1>Register</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input type="submit" name="submit" value="Daftar" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+{% endblock content %}
+```
+
+Untuk membuat dua akun dan tiga dummy data pada masing-masing user di lokal, bisa jalankan [http://localhost:8000/](http://localhost:8000/). Kemudian pergi ke page registrasi untuk membuat 2 user. Setelah itu, login ke salah satu user dan tambahkan 3 dummy data. Lakukan hal yang sama untuk user satunya lagi. Contoh alur webpage-nya adalah sebagai berikut:
+![image](https://github.com/user-attachments/assets/afb12d8f-46ed-44fb-baa8-9db0e49579be)
+
+![image](https://github.com/user-attachments/assets/ba5ec6e7-fd8c-451c-addb-ac9b15bdbb35)
+
+![image](https://github.com/user-attachments/assets/0bc8977b-2b48-490c-a71b-dde1248db23e)
+
+Untuk menghubungkan model `Product` dengan `user` sehingga setiap entry pada product itu disesuaikan dengan setiap user, dilakukan perubahan pada `models.py` dan `views.py`. Pada `models.py` kita tambahkan attribute user dengan field `ForeignKey`.
+```
+from django.contrib.auth.models import User
+...
+class Product(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+```
+
+Selanjutnya pada `views.py`, kita tambahkan kode sehingga pada setiap entry `Product` yang dilakukan, akan disimpan juga user yang memasukkan entry tersebut, sehingga product yang ditampilakn juga akan difiler sesuai user yang sedang logged in.
+
+```
+...
+def show_main(request):
+    product_entries = Product.objects.filter(user=request.user)
+
+    context = {
+        'name': request.user.username,
+        ...
+    }
+...
+def add_product(request):
+    form = ProductForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        product_entry = form.save(commit=False)
+        product_entry.user = request.user
+        product_entry.save()
+        return redirect('main:show_main')
+
+    context = {'form': form}
+    return render(request, "add_product.html", context)
+```
+
+Untuk menampilkan detail informasi pengguna yang sedang logged in seperti username dan menerapkan cookies seperti `last_login`, kita hanya perlu melakukan modifikasi ekstra pada tempalates `main.html`, karena sebelumnya sudah diimplementasikan cookies dan juga sudah mengimplementasikan user. 
+Pada `main.html` tambahkan kode berikut:
+```
+{% extends 'base.html' %}
+
+{% block title %}Product List{% endblock %}
+
+<h1>Welcome, {{ user.username }}!</h1>
+...
+<a href="{% url 'main:logout' %}">
+    <button>Logout</button>
+</a>
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+{% endblock %}
+```
+Dengan ini, kita dapat mengetahui informasi user yang sedang logged in seperti username dan last_login-nya
+
+## Perbedaan HttpResponseRedirect() dan redirect()?
+Biarpun keduanya berfungsi untuk pengalihan ke URL lain, mereka terdapat perbedaan dari sisi parameter yang bisa diterimanya. `HttpResponseRedirect()` hanya dapat menerima parameter berupa URL untuk melakukan pengaliahan URL, sedangkan `redirect` lebih fleksibel yang mana dapat menerima parameter berupa model, view, dan juga URL biarpun pada akhirnya akan mengembalikan sebuah `HttpResponseRedirect()` juga.
+
+## Cara kerja penghubungan model Product dengan User
+Untuk menghubungkan model Product dengan user, kita bisa menambahkan field `ForeignKey` pada model `Product`. Field ini berguna untuk membuat suatu relationship one-to-many (satu user bisa memiliki banyak product), dengan cara menghubungkan field tersebut dengan built in model `User` pada Django. Kodenya adalah sebagai berikut: `user = models.ForeignKey(User, on_delete=models.CASCADE)`. Belum selesai sampai situ, kita juga perlu menghubungkan entry product dengan user yang memasukannya, dan juga menampilkan product sesuai dengan user yang sedang logged in. 
+
+Untuk menghubungkan entry product dengan user dilakukan seperti berikut:
+```
+def add_product(request):
+    form = ProductForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        product_entry = form.save(commit=False)
+        product_entry.user = request.user
+        product_entry.save()
+        return redirect('main:show_main')
+
+    context = {'form': form}
+    return render(request, "add_product.html", context)
+```
+
+Untuk menampilkan product sesuai dengan user yang sedang logged in:
+```
+def show_main(request):
+    product_entries = Product.objects.filter(user=request.user)    # filter Product yang ditampilkan
+
+    context = {
+        'name': request.user.username,
+        'product_entries': product_entries,
+        'last_login': request.COOKIES['last_login'],
+    }
+
+    return render(request, "main.html", context)
+```
+
+# Bagaimana Django mengingat user yang logged in? Kegunaan lain cookies dan apakah semua cookies aman digunakan?
+Django mengingat user yang sedang logged in dengan mengimplementasikan session cookies. Cara kerjanya adalah ketika user login, Django menciptakan sesi untuk user tersebut dan mengirimkan cookie khusus untuk browser user. Cookie ini berisi id unik yang disimpan pada pada server. Cookie ini tidak berisi informasi mengenai user, namun berperan sebagai kunci untuk mengakses session yang disimpan dalam server. Setiap kali user mengunjungi page baru, browser user mengirimkan cookie lagi ke server, sehingga menyimpan session user secara berkala. Dengan adanya sesi ini, Django bisa mengidentifikasi pengguna yang sedang login di setiap request menggunakan `request.user`. Saat user logout, Django menghapus cookie dari server dan membuatnya tidak valid lagi.
+
+Selain menyimpan session, cookies juga berguna untuk melacak preferensi dan aktivitas user. Hal ini sangat berguna terutama untuk mendapatkan data mengenai halaman yang dikunjungi, atau produk yang dilihat user sehingga kita dapat menggunakan informasi itu untuk memberikan rekomendasi yang tepat kepada user tersebut. Selain itu, cookies juga dapat berperan sebagai penyimpan barang yang user tambahkan pada keranjang dalam kasus aplikasi e-commerce. 
+
+Namun, cookies juga memiliki kerentanannya sendiri. Apabila kita tidak melakukan prosedur keamanan yang tepat, cookies kita bisa saja tidak aman digunakan. Jika cookies tidak menggunakan misalnya flag secure atau http only, cookie dapat lebih mudah diserang dan dicuri oleh attacker. Selain itu pada koneksi http, cookie dapat diserang dengan menggunakan teknik seperti man-in-the-middle attacks. Contoh lainnya, apabila tidak diimplementasi CSRF token, penyerang juga dapat mencuri dan menggunakan cookies valid dan melakukan request sensitif atas nama pengguna.
