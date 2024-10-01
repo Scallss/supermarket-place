@@ -900,25 +900,48 @@ Selain itu, berikut adalah kode untuk tampilan lain:
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md">
-    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Create an Account</h1>
-    <form method="POST" class="space-y-4">
-        {% csrf_token %}
-        <div class="space-y-1">
-            <label for="username" class="block text-gray-600 font-medium">Username</label>
-            {{ form.username }} 
+<div class="flex items-start justify-center mt-16 bg-gray-100">
+    <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Create an Account</h1>
+
+        <form method="POST" action="" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your username" required>
+            </div>
+            
+            <div>
+                <label for="password1" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password1" id="password1" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your password" required>
+                <p class="text-sm text-gray-500">Your password must contain at least 8 characters, not commonly used, and not entirely numeric.</p>
+            </div>
+
+            <div>
+                <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input type="password" name="password2" id="password2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Confirm your password" required>
+            </div>
+
+            <div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">Register</button>
+            </div>
+        </form>
+
+        {% if messages %}
+        <div class="mt-4 text-red-600">
+            <ul>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
         </div>
-        <div class="space-y-1">
-            <label for="password1" class="block text-gray-600 font-medium">Password</label>
-            {{ form.password1 }}
-            <p class="text-sm text-gray-500">Your password must contain at least 8 characters, not commonly used, and not entirely numeric.</p>
-        </div>
-        <div class="space-y-1">
-            <label for="password2" class="block text-gray-600 font-medium">Confirm Password</label>
-            {{ form.password2 }}
-        </div>
-        <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">Register</button>
-    </form>
+        {% endif %}
+
+        <p class="mt-4 text-sm text-center text-gray-600">
+            Already have an account? 
+            <a href="{% url 'main:login' %}" class="text-indigo-600 hover:text-indigo-500">Login Now</a>
+        </p>
+    </div>
 </div>
 {% endblock %}
 ```
