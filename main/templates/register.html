@@ -4,10 +4,22 @@
 
 {% block content %}
 <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md">
-    <h1 class="text-2xl font-semibold mb-6">Register</h1>
-    <form method="POST">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Create an Account</h1>
+    <form method="POST" class="space-y-4">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="space-y-1">
+            <label for="username" class="block text-gray-600 font-medium">Username</label>
+            {{ form.username }} 
+        </div>
+        <div class="space-y-1">
+            <label for="password1" class="block text-gray-600 font-medium">Password</label>
+            {{ form.password1 }}
+            <p class="text-sm text-gray-500">Your password must contain at least 8 characters, not commonly used, and not entirely numeric.</p>
+        </div>
+        <div class="space-y-1">
+            <label for="password2" class="block text-gray-600 font-medium">Confirm Password</label>
+            {{ form.password2 }}
+        </div>
         <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">Register</button>
     </form>
 </div>
