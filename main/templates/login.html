@@ -1,32 +1,43 @@
 {% extends 'base.html' %}
 
-{% block meta %}
-<title>Login</title>
-{% endblock meta %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="login">
-  <h1>Login</h1>
+<div class="flex items-start justify-center mt-16 bg-gray-100">
+    <div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Login</h1>
 
-  <form method="POST" action="">
-    {% csrf_token %}
-    <table>
-      {{ form.as_table }}
-      <tr>
-        <td></td>
-        <td><input class="btn login_btn" type="submit" value="Login" /></td>
-      </tr>
-    </table>
-  </form>
+        <form method="POST" action="" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your username">
+            </div>
+            
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password" id="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your password">
+            </div>
 
-  {% if messages %}
-  <ul>
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %} Don't have an account yet?
-  <a href="{% url 'main:register' %}">Register Now</a>
+            <div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">Login</button>
+            </div>
+        </form>
+
+        {% if messages %}
+        <div class="mt-4 text-red-600">
+            <ul>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <p class="mt-4 text-sm text-center text-gray-600">
+            Don't have an account yet? 
+            <a href="{% url 'main:register' %}" class="text-indigo-600 hover:text-indigo-500">Register Now</a>
+        </p>
+    </div>
 </div>
-
-{% endblock content %}
+{% endblock %}

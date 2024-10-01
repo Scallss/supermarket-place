@@ -23,7 +23,7 @@ def show_main(request):
     return render(request, "main.html", context)
 
 def add_product(request):
-    form = ProductForm(request.POST or None)
+    form = ProductForm(request.POST or None, request.FILES or None)
 
     if form.is_valid() and request.method == "POST":
         product_entry = form.save(commit=False)
@@ -33,6 +33,23 @@ def add_product(request):
 
     context = {'form': form}
     return render(request, "add_product.html", context)
+
+def edit_product(request, id):
+    product = Product.objects.get(pk = id)
+
+    form = ProductForm(request.POST or None, request.FILES or None, instance=product)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_product.html", context)
+
+def delete_product(request, id):
+    product = Product.objects.get(pk = id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
 
 def register(request):
     form = UserCreationForm()
