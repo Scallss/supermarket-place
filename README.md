@@ -4,8 +4,10 @@ Place to fulfill your daily grocery needs!
 Tautan untuk melihat website pada [link ini](http://pascal-hafidz-supermarketplace2.pbp.cs.ui.ac.id)
 
 Loncat ke [Tugas 2](https://github.com/Scallss/supermarket-place#tugas-2)
+
 Loncat ke [Tugas 3](https://github.com/Scallss/supermarket-place?tab=readme-ov-file#tugas-3)
-Loncat ke [Tugas 4]() 
+
+Loncat ke [Tugas 4](https://github.com/Scallss/supermarket-place/tree/main#tugas-4) 
 
 # Tugas 2
 ## Implementation Checklist 
