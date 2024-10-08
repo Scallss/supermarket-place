@@ -9,7 +9,9 @@ Loncat ke [Tugas 3](https://github.com/Scallss/supermarket-place?tab=readme-ov-f
 
 Loncat ke [Tugas 4](https://github.com/Scallss/supermarket-place/tree/main#tugas-4) 
 
-Loncat ke []
+Loncat ke [Tugas 5](https://github.com/Scallss/supermarket-place/tree/main#tugas-5)
+
+Loncat ke [Tugas 6](https://github.com/Scallss/supermarket-place/tree/main#tugas-6)
 
 # Tugas 2
 ## Implementation Checklist 
