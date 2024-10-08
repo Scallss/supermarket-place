@@ -9,6 +9,8 @@ Loncat ke [Tugas 3](https://github.com/Scallss/supermarket-place?tab=readme-ov-f
 
 Loncat ke [Tugas 4](https://github.com/Scallss/supermarket-place/tree/main#tugas-4) 
 
+Loncat ke []
+
 # Tugas 2
 ## Implementation Checklist 
 Untuk mmebuat proyek Django baru bernama `supermarket-place` kita jalankan perintah berikut:
@@ -341,7 +343,7 @@ XML by id:
 JSON by id:
 ![image](https://github.com/user-attachments/assets/115ca63d-a5a4-486c-96ae-fbe827bd0811)
 
-# Tugas 3
+# Tugas 4
 ## Checklist Implementation
 
 Untuk mengimplementasikan fungsi registrasi, login, dan logout, bisa dimulai dengan pertama membuat fungsinya satu-satu pada `views.py`. Selain implementasi yang utama, juga diimplementasi cookies untuk menghandle session. Implementasi codenya adalah sebagai berikut:
@@ -694,7 +696,7 @@ Selain menyimpan session, cookies juga berguna untuk melacak preferensi dan akti
 Namun, cookies juga memiliki kerentanannya sendiri. Apabila kita tidak melakukan prosedur keamanan yang tepat, cookies kita bisa saja tidak aman digunakan. Jika cookies tidak menggunakan misalnya flag secure atau http only, cookie dapat lebih mudah diserang dan dicuri oleh attacker. Selain itu pada koneksi http, cookie dapat diserang dengan menggunakan teknik seperti man-in-the-middle attacks. Contoh lainnya, apabila tidak diimplementasi CSRF token, penyerang juga dapat mencuri dan menggunakan cookies valid dan melakukan request sensitif atas nama pengguna.
 
 
-# Tugas 4
+# Tugas 5
 ## Checklist Implementation 
 Untuk implementasi fungsi untuk menghapus dan mengedit `Product`, bisa dilakukan dengan menambah fungsi-fungsi di bawah ini pada `views.py`: 
 ```
@@ -1181,3 +1183,36 @@ Padding adalah jarak antara konten elemen dengan border. Padding bisa diatur unt
 Flexbox merupakan model layout satu dimensi untuk mengatur elemen dalam satu baris atau kolom. Flexbox dirancang untuk tata letak yang dinamis dan fleksibel serta dengan mudah dapat menyesuaikan diri terhadap ukuran layar atau kontainer tanpa perlu pengaturan manual yang rumit.
 
 Grid Layout adalah model layout dua dimensi yang memungkinkan kita mengatur elemen dalam bentuk baris dan kolom. Kita bisa mengatur elemen dalam dua arah (horizontal dan vertikal) secara bersamaan menggunakan grid. Grid digunakan bilamana kita membutuhkan sesuatu yang memberikan kontrol dengan presisi tinggi dalam membuat tata letak yang kompleks.
+
+
+# Tugas 6
+
+## Checklist Implementation
+
+## Manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web
+- **Interaktivitas**: JavaScript memungkinkan interaksi dinamis dengan pengguna tanpa perlu memuat ulang halaman. Misalnya, menampilkan dan menyembunyikan elemen, validasi form secara real-time, dan menangani peristiwa (event handling) seperti klik tombol atau input data.
+- **Asynchronous Processing**: JavaScript mendukung pemrosesan asynchronous (contohnya, dengan `fetch()` dan `Promise`), yang memungkinkan pemanggilan API atau pengambilan data dari server tanpa mengganggu alur kerja pengguna.
+- **Compatibility**: JavaScript berjalan di semua browser modern dan bersifat lintas platform, sehingga kode yang ditulis bisa digunakan di berbagai perangkat tanpa modifikasi yang signifikan.
+- **DOM Manipulation**: Dengan JavaScript, developer dapat memodifikasi struktur dan konten HTML secara langsung melalui DOM (Document Object Model), yang membuat perubahan pada tampilan halaman lebih fleksibel.
+- **Front-end Frameworks**: Banyak framework dan library berbasis JavaScript (seperti React, Angular, dan Vue) yang memudahkan pengembangan aplikasi web yang cepat, scallable, dan dapat di-maintain dengan baik.
+
+
+## Fungsi `await` dalam `fetch()`
+`await` digunakan untuk menunggu proses asynchronous selesai sebelum melanjutkan eksekusi baris kode berikutnya. Ketika digunakan dengan `fetch()`, `await` akan menunggu hingga respons dari permintaan HTTP diterima dan hasilnya di-resolve.
+
+Apabila `await` tidak digunakan, kode akan langsung melanjutkan ke baris berikutnya, dan hasil dari `fetch()` akan berupa **Promise** yang belum selesai. Ini bisa menyebabkan error ketika kita mencoba memanipulasi data yang belum tersedia.
+
+## Kenapa menggunakan csrf_exempt pada view yang akan digunakan untuk AJAX POST?
+CSRF (Cross-Site Request Forgery) adalah salah satu mekanisme perlindungan di Django untuk mencegah serangan berbahaya. Secara default, Django akan memeriksa token CSRF setiap kali menerima POST request. Pada AJAX POST, terkadang token CSRF tidak dikirim secara otomatis oleh JavaScript.
+
+Menggunakan decorator @csrf_exempt pada view menonaktifkan pemeriksaan CSRF untuk permintaan tertentu, terutama saat pengembang tahu bahwa permintaan tersebut aman atau telah di-handle di tempat lain. Namun, bukan berarti kita dapat menggunakan decorator ini dengan sembarangan, melainkan dengan hati-hati untuk memastikan data yang dikirim aman.
+
+## Mengapa pembersihan data input pengguna dilakukan di backend juga?
+Alasan pembersihan data dilakukan di backend adalah:
+
+- Keamanan: Frontend dapat dimanipulasi oleh pengguna, sehingga validasi di frontend bisa dilewati dengan mudah. Backend merupakan lapisan perlindungan terakhir untuk memastikan bahwa data yang diterima aman dan valid.
+- Konsistensi: Backend memastikan bahwa semua data yang masuk sesuai dengan aturan yang telah ditentukan, terlepas dari bagaimana data tersebut dikirim (misalnya melalui form di browser atau API call).
+- Kontrol Penuh: Backend memiliki kontrol penuh terhadap data yang disimpan atau diproses, sehingga dapat memastikan pembersihan dan validasi dilakukan secara konsisten untuk setiap permintaan yang diterima.
+
+Oleh karena itu, meskipun frontend dapat memberikan kenyamanan dengan validasi dan pembersihan awal, backend harus tetap bertanggung jawab untuk memproses data dengan aman.
+
