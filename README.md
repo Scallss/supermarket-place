@@ -4,8 +4,14 @@ Place to fulfill your daily grocery needs!
 Tautan untuk melihat website pada [link ini](http://pascal-hafidz-supermarketplace2.pbp.cs.ui.ac.id)
 
 Loncat ke [Tugas 2](https://github.com/Scallss/supermarket-place#tugas-2)
+
 Loncat ke [Tugas 3](https://github.com/Scallss/supermarket-place?tab=readme-ov-file#tugas-3)
-Loncat ke [Tugas 4]() 
+
+Loncat ke [Tugas 4](https://github.com/Scallss/supermarket-place/tree/main#tugas-4) 
+
+Loncat ke [Tugas 5](https://github.com/Scallss/supermarket-place/tree/main#tugas-5)
+
+Loncat ke [Tugas 6](https://github.com/Scallss/supermarket-place/tree/main#tugas-6)
 
 # Tugas 2
 ## Implementation Checklist 
@@ -339,7 +345,7 @@ XML by id:
 JSON by id:
 ![image](https://github.com/user-attachments/assets/115ca63d-a5a4-486c-96ae-fbe827bd0811)
 
-# Tugas 3
+# Tugas 4
 ## Checklist Implementation
 
 Untuk mengimplementasikan fungsi registrasi, login, dan logout, bisa dimulai dengan pertama membuat fungsinya satu-satu pada `views.py`. Selain implementasi yang utama, juga diimplementasi cookies untuk menghandle session. Implementasi codenya adalah sebagai berikut:
@@ -692,7 +698,7 @@ Selain menyimpan session, cookies juga berguna untuk melacak preferensi dan akti
 Namun, cookies juga memiliki kerentanannya sendiri. Apabila kita tidak melakukan prosedur keamanan yang tepat, cookies kita bisa saja tidak aman digunakan. Jika cookies tidak menggunakan misalnya flag secure atau http only, cookie dapat lebih mudah diserang dan dicuri oleh attacker. Selain itu pada koneksi http, cookie dapat diserang dengan menggunakan teknik seperti man-in-the-middle attacks. Contoh lainnya, apabila tidak diimplementasi CSRF token, penyerang juga dapat mencuri dan menggunakan cookies valid dan melakukan request sensitif atas nama pengguna.
 
 
-# Tugas 4
+# Tugas 5
 ## Checklist Implementation 
 Untuk implementasi fungsi untuk menghapus dan mengedit `Product`, bisa dilakukan dengan menambah fungsi-fungsi di bawah ini pada `views.py`: 
 ```
@@ -1179,3 +1185,256 @@ Padding adalah jarak antara konten elemen dengan border. Padding bisa diatur unt
 Flexbox merupakan model layout satu dimensi untuk mengatur elemen dalam satu baris atau kolom. Flexbox dirancang untuk tata letak yang dinamis dan fleksibel serta dengan mudah dapat menyesuaikan diri terhadap ukuran layar atau kontainer tanpa perlu pengaturan manual yang rumit.
 
 Grid Layout adalah model layout dua dimensi yang memungkinkan kita mengatur elemen dalam bentuk baris dan kolom. Kita bisa mengatur elemen dalam dua arah (horizontal dan vertikal) secara bersamaan menggunakan grid. Grid digunakan bilamana kita membutuhkan sesuatu yang memberikan kontrol dengan presisi tinggi dalam membuat tata letak yang kompleks.
+
+
+# Tugas 6
+
+## Checklist Implementation
+Untuk implementasi kode `cards` data product agar mendukung AJAX `get` dilakukan beberapa perubahan pada `main.html`:
+
+`main.html` ditambahkan beberapa:
+```
+async function getProductEntries(){
+        return fetch("{% url 'main:show_json' %}").then((res) => res.json())
+    }
+
+    async function refreshProductEntries() {
+        document.getElementById("product_cards").innerHTML = "";
+        document.getElementById("product_cards").className = "";
+        const productEntries = await getProductEntries();
+        let htmlString = "";
+        let classNameString = "";
+
+        if (productEntries.length === 0) {
+            classNameString = "flex flex-col items-center justify-center min-h-[24rem] p-6";
+            htmlString = `
+                <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                    <img src="{% static 'image/sedih-banget.png' %}" alt="Sad face" class="w-32 h-32 mb-4"/>
+                    <p class="text-center text-gray-600 mt-4">Belum ada data produk tersedia.</p>
+                </div>
+            `;
+        } else {
+            classNameString = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6"; // Tampilan grid untuk responsivitas
+
+            productEntries.forEach(item => {
+                let product = item.fields;
+                const name = DOMPurify.sanitize(product.name);
+                const description = DOMPurify.sanitize(product.description);
+                const category = DOMPurify.sanitize(product.category);
+                let imageUrl = `/media/${product.image}`;  // Path gambar disimpan di folder media
+                htmlString += `
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col h-full transform transition-transform hover:scale-105 duration-300">
+                        <img src="${imageUrl}" alt="${name}" class="w-full h-48 object-cover">
+                        <div class="p-4 flex-grow">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">${name}</h3>
+                            <p class="text-gray-700 mb-2">Price: <span class="text-green-600 font-bold">Rp${product.price.toLocaleString()}</span></p>
+                            <p class="text-gray-600 mb-2">Description: ${description}</p>
+                            <p class="text-gray-600 mb-2">Stock: ${product.stock}</p>
+                            <p class="text-gray-600 mb-2">Category ${category || 'N/A'}</p>
+                            <p class="text-gray-500 text-sm">Date Added: ${new Date(product.date_added).toLocaleDateString()}</p>
+                        </div>
+                        <div class="flex justify-between items-center p-4 border-t border-gray-200 mt-auto">
+                            <a href="/edit-product/${item.pk}" class="text-blue-500 hover:underline">Edit</a>
+                            <a href="/delete/${item.pk}" class="text-red-500 hover:underline">Delete</a>
+                        </div>
+                    </div>`;
+            });
+        }
+        document.getElementById("product_cards").className = classNameString;
+        document.getElementById("product_cards").innerHTML = htmlString;
+        }
+
+    refreshProductEntries();
+```
+
+Untuk implementasi AJAX POST dilakukan beberapa perubahan pada `views.py`, `main.html`, `urls.py`:
+```
+from django.urls import path
+from main.views import *
+
+app_name = 'main'
+
+urlpatterns = [
+    path('', show_main, name='show_main'),  # Home page to display products
+    path('add_product/', add_product, name='add_product'),  # Add product page
+    path('xml/', show_xml, name='show_xml'),
+    path('json/', show_json, name='show_json'),
+    path('xml/<str:id>/', show_xml_by_id, name='show_xml_by_id'),
+    path('json/<str:id>/', show_json_by_id, name='show_json_by_id'),
+    path('register/', register, name='register'),
+    path('login/', login_user, name='login'),
+    path('logout/', logout_user, name='logout'),
+    path('edit-product/<uuid:id>', edit_product, name='edit_product'),
+    path('delete/<uuid:id>', delete_product, name='delete_product'),
+    path('add-product-entry-ajax', add_product_entry_ajax, name='add_product_entry_ajax'),
+]
+```
+
+
+`views.py` ditambahkan:
+```
+...
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
+...
+@login_required(login_url='/login')
+def show_main(request):
+
+    context = {
+        'name': request.user.username,
+        'last_login': request.COOKIES['last_login'],
+    }
+
+    return render(request, "main.html", context)
+
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+
+    user = request.user
+    name = strip_tags(request.POST.get("name"))
+    price = request.POST.get("price")
+    description = strip_tags(request.POST.get("description"))
+    stock = request.POST.get("stock")
+    image = request.FILES.get("image")
+    category = strip_tags(request.POST.get("category"))
+
+    new_product = Product(
+        name=name, price=price,
+        description=description, stock=stock,
+        image=image, category=category, user=user
+    )
+    new_product.save()
+
+    return HttpResponse(b"CREATED", status=201)
+```
+
+pada `main.html`:
+```
+<!-- Modal Structure -->
+<div id="crudModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+    <!-- Modal Content -->
+    <div id="crudModalContent" class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full space-y-4">
+        <!-- Close Button -->
+        <button type="button "id="closeModalBtn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <!-- Form for Adding Product -->
+        <form id="productForm">
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+                <input type="text" id="name" name="name" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+            </div>
+            <div class="mb-4">
+                <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                <input type="number" id="price" name="price" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+            </div>
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="description" name="description" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+                <input type="number" id="stock" name="stock" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+            </div>
+            <div class="mb-4">
+                <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                <input type="text" id="category" name="category" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+            </div>
+            <div class="mb-4">
+                <label for="image" class="block text-sm font-medium text-gray-700">Product Image</label>
+                <input type="file" id="image" name="image" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Add Product
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+...
+const modal = document.getElementById('crudModal');
+    const modalContent = document.getElementById('crudModalContent');
+
+    function showModal() {
+        const modal = document.getElementById('crudModal');
+        const modalContent = document.getElementById('crudModalContent');
+
+        modal.classList.remove('hidden'); 
+        setTimeout(() => {
+            modalContent.classList.remove('opacity-0', 'scale-95');
+            modalContent.classList.add('opacity-100', 'scale-100');
+        }, 50); 
+    }
+
+    function hideModal() {
+        const modal = document.getElementById('crudModal');
+        const modalContent = document.getElementById('crudModalContent');
+
+        modalContent.classList.remove('opacity-100', 'scale-100');
+        modalContent.classList.add('opacity-0', 'scale-95');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 150); 
+    }
+
+    document.getElementById("closeModalBtn").addEventListener("click", hideModal);
+
+    function addProduct() {
+        fetch("{% url 'main:add_product_entry_ajax' %}", {
+        method: "POST",
+        body: new FormData(document.querySelector('#productForm')),
+        })
+        .then(response => {
+            refreshProductEntries();  // Refrxesh the product entries
+            hideModal();  // Close the modal after submission
+        })
+        .catch(error => console.error('Error:', error));
+
+        document.getElementById("productForm").reset(); 
+        document.querySelector("[data-modal-toggle='crudModal']").click();
+
+        return false;
+    }
+
+    document.getElementById("productForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        addProduct();
+    })
+```
+
+
+## Manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web
+- **Interaktivitas**: JavaScript memungkinkan interaksi dinamis dengan pengguna tanpa perlu memuat ulang halaman. Misalnya, menampilkan dan menyembunyikan elemen, validasi form secara real-time, dan menangani peristiwa (event handling) seperti klik tombol atau input data.
+- **Asynchronous Processing**: JavaScript mendukung pemrosesan asynchronous (contohnya, dengan `fetch()` dan `Promise`), yang memungkinkan pemanggilan API atau pengambilan data dari server tanpa mengganggu alur kerja pengguna.
+- **Compatibility**: JavaScript berjalan di semua browser modern dan bersifat lintas platform, sehingga kode yang ditulis bisa digunakan di berbagai perangkat tanpa modifikasi yang signifikan.
+- **DOM Manipulation**: Dengan JavaScript, developer dapat memodifikasi struktur dan konten HTML secara langsung melalui DOM (Document Object Model), yang membuat perubahan pada tampilan halaman lebih fleksibel.
+- **Front-end Frameworks**: Banyak framework dan library berbasis JavaScript (seperti React, Angular, dan Vue) yang memudahkan pengembangan aplikasi web yang cepat, scallable, dan dapat di-maintain dengan baik.
+
+
+## Fungsi `await` dalam `fetch()`
+`await` digunakan untuk menunggu proses asynchronous selesai sebelum melanjutkan eksekusi baris kode berikutnya. Ketika digunakan dengan `fetch()`, `await` akan menunggu hingga respons dari permintaan HTTP diterima dan hasilnya di-resolve.
+
+Apabila `await` tidak digunakan, kode akan langsung melanjutkan ke baris berikutnya, dan hasil dari `fetch()` akan berupa **Promise** yang belum selesai. Ini bisa menyebabkan error ketika kita mencoba memanipulasi data yang belum tersedia.
+
+## Kenapa menggunakan csrf_exempt pada view yang akan digunakan untuk AJAX POST?
+CSRF (Cross-Site Request Forgery) adalah salah satu mekanisme perlindungan di Django untuk mencegah serangan berbahaya. Secara default, Django akan memeriksa token CSRF setiap kali menerima POST request. Pada AJAX POST, terkadang token CSRF tidak dikirim secara otomatis oleh JavaScript.
+
+Menggunakan decorator @csrf_exempt pada view menonaktifkan pemeriksaan CSRF untuk permintaan tertentu, terutama saat pengembang tahu bahwa permintaan tersebut aman atau telah di-handle di tempat lain. Namun, bukan berarti kita dapat menggunakan decorator ini dengan sembarangan, melainkan dengan hati-hati untuk memastikan data yang dikirim aman.
+
+## Mengapa pembersihan data input pengguna dilakukan di backend juga?
+Alasan pembersihan data dilakukan di backend adalah:
+
+- Keamanan: Frontend dapat dimanipulasi oleh pengguna, sehingga validasi di frontend bisa dilewati dengan mudah. Backend merupakan lapisan perlindungan terakhir untuk memastikan bahwa data yang diterima aman dan valid.
+- Konsistensi: Backend memastikan bahwa semua data yang masuk sesuai dengan aturan yang telah ditentukan, terlepas dari bagaimana data tersebut dikirim (misalnya melalui form di browser atau API call).
+- Kontrol Penuh: Backend memiliki kontrol penuh terhadap data yang disimpan atau diproses, sehingga dapat memastikan pembersihan dan validasi dilakukan secara konsisten untuk setiap permintaan yang diterima.
+
+Oleh karena itu, meskipun frontend dapat memberikan kenyamanan dengan validasi dan pembersihan awal, backend harus tetap bertanggung jawab untuk memproses data dengan aman.
+
