@@ -9,7 +9,7 @@ class Product(models.Model):
     price = models.IntegerField()
     description = models.TextField()
     stock = models.PositiveIntegerField(default=0)
-    image = models.ImageField(upload_to='products/')  # Images stored in 'media/products/'
+    image = models.ImageField(upload_to='products/')
     category = models.CharField(max_length=100, blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
 

@@ -1,5 +1,6 @@
 from django import forms
 from .models import Product
+from django.utils.html import strip_tags
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -13,3 +14,15 @@ class ProductForm(forms.ModelForm):
             'category': forms.TextInput(attrs={'class': 'border border-gray-300 p-2 w-full focus:ring-indigo-500 focus:border-indigo-500'}),
             'image': forms.ClearableFileInput(attrs={'class': 'border border-gray-300 p-2 w-full focus:ring-indigo-500 focus:border-indigo-500'}),
         }
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        return strip_tags(name)
+
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+        return strip_tags(description)
+    
+    def clean_category(self):
+        category = self.cleaned_data["category"]
+        return strip_tags(category)
