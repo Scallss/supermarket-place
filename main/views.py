@@ -1,8 +1,9 @@
 import datetime
+import json
 from django.shortcuts import render, redirect 
 from .models import Product
 from main.forms import ProductForm
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
@@ -34,6 +35,35 @@ def add_product(request):
 
     context = {'form': form}
     return render(request, "add_product.html", context)
+
+@csrf_exempt
+def add_product_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            # Pastikan semua field disertakan
+            new_product = Product.objects.create(
+                user=request.user,  # Ambil user dari request yang sudah login
+                name=data["name"],
+                price=int(data["price"]),
+                description=data["description"],
+                stock=int(data["stock"]),
+                image=data['image'],
+                category=data["category"],  # Default category ke string kosong jika tidak ada
+            )
+
+            new_product.save()
+            return JsonResponse({"status": "success"}, status=200)
+
+        except KeyError as e:
+            # Tangani error jika ada field yang hilang
+            return JsonResponse({"status": "error", "message": f"Missing field: {str(e)}"}, status=400)
+        except Exception as e:
+            # Tangani error lain
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid HTTP method"}, status=405)
 
 @csrf_exempt
 @require_POST
